@@ -92,6 +92,11 @@
             close () {
                 this.notification.hidden = 'is-hidden'
             }
+        },
+        beforeMount () {
+            if (localStorage.getItem('user') !== null) {
+                this.$router.replace({name: 'Home'})
+            }
         }
     }
 </script>

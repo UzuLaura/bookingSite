@@ -1,5 +1,11 @@
 <template>
     <div class="edit">
+        <!--SPINNER-->
+        <div v-bind:class="[spinner, display]">
+            <div>
+                <img src="../assets/loader.gif" alt="">
+            </div>
+        </div>
         <div class="container section">
             <!-- NOTIFICATION MESSAGE -->
             <div class="notification" v-bind:class="[notification.color, notification.hidden]">
@@ -84,6 +90,8 @@
         name: "Edit",
         data () {
             return {
+                spinner: 'spinner',
+                display: '',
                 notification: {
                     hidden: 'is-hidden',
                     color: '',
@@ -91,6 +99,7 @@
                 },
                 loading: '',
                 property: {
+                    ownerID: '',
                     id: '',
                     name: '',
                     city: '',
@@ -146,20 +155,34 @@
             }
         },
         beforeMount () {
-            firebase
-                .firestore()
-                .collection('properties')
-                .doc(this.$route.params.id)
-                .get()
-                .then(property => {
-                    this.property.id = property.id
-                    this.property.name = property.data().name
-                    this.property.description = property.data().description
-                    this.property.image = property.data().image
-                    this.property.extraImages = JSON.parse(property.data().extraImg)
-                    this.property.price = property.data().price
-                    this.property.city = property.data().city
-                })
+            if (localStorage.getItem('user') === null) {
+                this.$router.replace({name: 'Login'})
+            } else {
+                firebase
+                    .firestore()
+                    .collection('properties')
+                    .doc(this.$route.params.id)
+                    .get()
+                    .then(property => {
+                        this.property.id = property.id
+                        this.property.name = property.data().name
+                        this.property.description = property.data().description
+                        this.property.image = property.data().image
+                        this.property.extraImages = JSON.parse(property.data().extraImg)
+                        this.property.price = property.data().price
+                        this.property.city = property.data().city
+                        this.property.ownerID = property.data().user
+                    })
+                    .then(() => {
+                        if (localStorage.getItem('user') !== this.property.ownerID) {
+                            this.$router.replace({name: 'Home'})
+                        }
+                    })
+                    .then(() => {
+                        this.spinner = ''
+                        this.display = 'is-hidden'
+                    })
+            }
         }
     }
 </script>
@@ -170,5 +193,17 @@
     }
     .add-more:hover {
         opacity: 0.9;
+    }
+    .spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+        background: white;
+        z-index: 100;
+        position: fixed;
+        top: 0;
+        left: 0;
     }
 </style>

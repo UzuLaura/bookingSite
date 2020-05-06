@@ -1,5 +1,11 @@
 <template>
   <div class="home">
+      <!--SPINNER-->
+      <div v-bind:class="[spinner, display]">
+          <div>
+              <img src="../assets/loader.gif" alt="">
+          </div>
+      </div>
     <div class="container section">
       <div class="margin-bottom" v-for="property in properties" :key="property.title">
         <div class="columns is-vcentered hover card is-marginless">
@@ -36,6 +42,8 @@
         name: "Home",
         data () {
             return {
+                spinner: 'spinner',
+                display: '',
                 properties: [],
                 user: localStorage.getItem('user')
             }
@@ -61,39 +69,64 @@
             }
         },
         beforeMount () {
-            firebase
-                .firestore()
-                .collection('properties')
-                .where('user', '==', this.user)
-                .orderBy("createdAt")
-                .get()
-                .then(data => {
-                    data.forEach(property => {
-                        this.properties.push({
-                            id: property.id,
-                            name: property.data().name,
-                            image: property.data().image,
-                            price: property.data().price,
-                            description: property.data().description,
-                            city: property.data().city,
-                            owner: property.data().ownerName,
-                            createdAt: property.data().createdAt
+            if (localStorage.getItem('user') === null) {
+                this.$router.replace({name: 'Login'})
+            } else {
+                firebase
+                    .firestore()
+                    .collection('properties')
+                    .where('user', '==', this.user)
+                    .orderBy("createdAt")
+                    .get()
+                    .then(data => {
+                        data.forEach(property => {
+                            this.properties.push({
+                                id: property.id,
+                                name: property.data().name,
+                                image: property.data().image,
+                                price: property.data().price,
+                                description: property.data().description,
+                                city: property.data().city,
+                                owner: property.data().ownerName,
+                                createdAt: property.data().createdAt
+                            })
                         })
                     })
-                })
+                    .then(() => {
+                        this.spinner = ''
+                        this.display = 'is-hidden'
+                    })
+            }
         }
     }
 </script>
 
 <style scoped>
-  .hover:hover {
-    opacity: 0.9;
-    cursor: pointer;
-  }
-  .margin-bottom {
-    margin-bottom: 10px;
-  }
-  .property-img {
-    padding: 20px;
-  }
+    .hover:hover {
+        opacity: 0.9;
+        cursor: pointer;
+    }
+    .margin-bottom {
+        margin-bottom: 10px;
+    }
+    .property-img {
+        padding: 20px;
+    }
+    .spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+        background: white;
+        z-index: 100;
+        position: fixed;
+        top: 0;
+        left: 0;
+    }
+    @media (max-width: 600px) {
+        .property-img {
+            padding: 0;
+        }
+    }
 </style>

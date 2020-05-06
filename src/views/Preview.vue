@@ -1,5 +1,11 @@
 <template>
     <div class="preview">
+        <!--SPINNER-->
+        <div v-bind:class="[spinner, display]">
+            <div>
+                <img src="../assets/loader.gif" alt="">
+            </div>
+        </div>
         <section class="section container">
             <h2 class="title has-text-centered">{{ property.name }}</h2>
             <hr>
@@ -44,6 +50,8 @@
         name: "Preview",
         data () {
             return {
+                spinner: 'spinner',
+                display: '',
                 notification: {
                     hidden: 'is-hidden',
                     color: '',
@@ -85,7 +93,6 @@
                 this.notification.message = 'Are you sure you want to delete this property?'
                 this.notification.fixed = 'fixed-notification'
                 this.notification.hidden = ''
-
             },
             removeProperty () {
                 firebase
@@ -102,24 +109,38 @@
             }
         },
         beforeMount () {
-            firebase
-                .firestore()
-                .collection('properties')
-                .doc(this.$route.params.id)
-                .get()
-                .then(property => {
-                    this.property.id = property.id
-                    this.property.name = property.data().name
-                    this.property.description = property.data().description
-                    this.property.image = property.data().image
-                    this.property.extraImages = JSON.parse(property.data().extraImg)
-                    this.property.price = property.data().price
-                    this.property.city = property.data().city
-                    this.property.extraImages.push(this.property.image)
-                })
-                // .then(() => {
-                //     this.imageIndex = setInterval(() => this.carouselForward(), 3000)
-                // })
+            if (localStorage.getItem('user') === null) {
+                this.$router.replace({name: 'Login'})
+            } else {
+                    firebase
+                        .firestore()
+                        .collection('properties')
+                        .doc(this.$route.params.id)
+                        .get()
+                        .then(property => {
+                            this.property.id = property.id
+                            this.property.name = property.data().name
+                            this.property.description = property.data().description
+                            this.property.image = property.data().image
+                            this.property.extraImages = JSON.parse(property.data().extraImg)
+                            this.property.price = property.data().price
+                            this.property.city = property.data().city
+                            this.property.ownerID = property.data().user
+                            this.property.extraImages.push(this.property.image)
+                        })
+                        .then(() => {
+                            if (localStorage.getItem('user') !== this.property.ownerID) {
+                                this.$router.replace({name: 'Home'})
+                            }
+                        })
+                        .then(() => {
+                            this.spinner = ''
+                            this.display = 'is-hidden'
+                        })
+                    // .then(() => {
+                    //     this.imageIndex = setInterval(() => this.carouselForward(), 3000)
+                    // })
+                }
         },
     }
 </script>
@@ -153,5 +174,17 @@
             top: 40%;
             left: 10%;
         }
+    }
+    .spinner {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100vw;
+        height: 100vh;
+        background: white;
+        z-index: 100;
+        position: fixed;
+        top: 0;
+        left: 0;
     }
 </style>
