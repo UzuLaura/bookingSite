@@ -51,8 +51,9 @@
         </div>
       </nav>
     </div>
-    <Hero subtitle=""/>
-    <router-view />
+    <Hero />
+    <router-view class="has-background-light" />
+    <Footer />
   </div>
 </template>
 
@@ -60,10 +61,11 @@
     import firebase from 'firebase/app';
     import 'firebase/auth';
     import Hero from './components/Hero.vue'
+    import Footer from './components/Footer.vue'
 
-  export default {
+    export default {
       name: 'App',
-      components: {Hero},
+      components: {Hero, Footer},
       data () {
           return {
               user: ''
@@ -76,7 +78,9 @@
                   .signOut()
                   .then(() => {
                       this.user = ''
-                      this.$router.push("Login")
+                      localStorage.removeItem('user')
+                      localStorage.removeItem('username')
+                      this.$router.push({name: "Login"})
                   })
           }
       },
@@ -86,6 +90,11 @@
               .onAuthStateChanged(user => {
                   if (user) {
                       this.user = user
+                      localStorage.setItem('user', user.uid)
+                      localStorage.setItem('username', user.displayName)
+                  } else {
+                      localStorage.removeItem('user')
+                      localStorage.removeItem('username')
                   }
               })
       }

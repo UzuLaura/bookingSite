@@ -1,9 +1,9 @@
 <template>
-    <div class="register">
+    <div class="register is-light">
         <section class="container section">
-            <div class="notification is-success" v-bind:class="hidden">
+            <div class="notification is-success" v-bind:class="[notification.hidden, notification.color]">
                 <button class="delete" v-on:click="close"></button>
-                Registered successfully
+                {{ notification.message }}
             </div>
             <form action="" v-on:submit.prevent="register">
                 <div class="field is-horizontal">
@@ -35,7 +35,7 @@
                         <input class="input" v-model="user.password" type="password" placeholder="Password">
                     </div>
                 </div>
-                <button type="submit" class="button primary-color is-pulled-right">Register</button>
+                <button type="submit" class="button primary-color is-pulled-right" v-bind:class="loading">Register</button>
             </form>
         </section>
     </div>
@@ -48,7 +48,12 @@
         name: "Register",
         data () {
             return {
-                hidden: 'is-hidden',
+                notification: {
+                    hidden: 'is-hidden',
+                    color: '',
+                    message: ''
+                },
+                loading: '',
                 user: {
                     name: '',
                     surname: '',
@@ -59,6 +64,8 @@
         },
         methods: {
             register () {
+                this.notification.hidden = 'is-hidden'
+                this.loading = 'is-loading'
                 firebase
                     .auth()
                     .createUserWithEmailAndPassword(this.user.email, this.user.password)
@@ -67,16 +74,23 @@
                             .updateProfile({
                                 displayName: this.user.name + ' ' + this.user.surname
                             })
-                            .then (() => {
-                                this.hidden = ''
-                            })
                     })
-                    .catch(function(error) {
-                        alert(error)
+                    .then (() => {
+                        this.loading = ''
+                        this.notification.color = 'is-success'
+                        this.notification.message = 'Registered successfully!'
+                        this.notification.hidden = ''
+                        this.$router.replace({ name: "Home" })
+                    })
+                    .catch(error => {
+                        this.loading = ''
+                        this.notification.color = 'is-danger'
+                        this.notification.message = error
+                        this.notification.hidden = ''
                     })
             },
             close () {
-                this.hidden = 'is-hidden'
+                this.notification.hidden = 'is-hidden'
             }
         }
     }

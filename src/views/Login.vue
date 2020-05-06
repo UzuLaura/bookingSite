@@ -1,9 +1,9 @@
 <template>
     <div class="login">
         <section class="container section">
-            <div class="notification is-success" v-bind:class="hidden">
+            <div class="notification" v-bind:class="[notification.hidden, notification.color]">
                 <button class="delete" v-on:click="close"></button>
-                {{ error }}
+                {{ notification.message }}
             </div>
             <form action="" v-on:submit.prevent="login">
                 <div class="field">
@@ -38,24 +38,34 @@
                 user: {
                     email: '',
                     password: ''
+                },
+                notification: {
+                    hidden: 'is-hidden',
+                    color: '',
+                    message: ''
                 }
             }
         },
         methods: {
             login () {
+                this.notification.hidden = 'is-hidden'
                 firebase
                     .auth()
                     .signInWithEmailAndPassword(this.user.email, this.user.password)
                     .then(() => {
+                        this.notification.color = 'is-success'
+                        this.notification.message = 'Logged in successfully!'
+                        this.notification.hidden = ''
                         this.$router.replace({ name: "Home" })
                     })
                     .catch(error => {
-                        this.error = error
-                        this.hidden = ''
+                        this.notification.color = 'is-danger'
+                        this.notification.message = error
+                        this.notification.hidden = ''
                     })
             },
             close () {
-                this.hidden = 'is-hidden'
+                this.notification.hidden = 'is-hidden'
             }
         }
     }
