@@ -1,6 +1,5 @@
 <template>
     <div class="preview">
-        <!--SPINNER-->
         <div v-bind:class="[spinner, display]">
             <div>
                 <img src="../assets/loader.gif" alt="">
@@ -9,7 +8,6 @@
         <section class="section container">
             <h2 class="title has-text-centered">{{ property.name }}</h2>
             <hr>
-            <!--NOTIFICATION-->
             <div class="notification is-danger" ref="notification" v-bind:class="[notification.color, notification.hidden, notification.fixed]">
                 <button class="delete" v-on:click="close"></button>
                 <div class="has-text-centered">
@@ -17,7 +15,6 @@
                     <button class="button is-danger is-inverted is-outlined confirm-btn" v-on:click="removeProperty">Confirm</button>
                 </div>
             </div>
-            <!--PROPERTY DESCRIPTION-->
             <div class="columns">
                 <div class="column is-6">
                     <img :src="property.image" :alt="property.name">
@@ -33,7 +30,6 @@
                     <p>{{ property.description }}</p>
                 </div>
             </div>
-            <!--CAROUSEL-->
             <div class="carousel-img level" v-bind:style="{ background: 'url(' + property.extraImages[imageIndex] + ')' }">
                 <span class="button carousel-btn is-light is-outlined level-left" v-on:click="carouselBack">&lt;</span>
                 <span class="button carousel-btn is-light is-outlined level-left" v-on:click="carouselForward">&gt;</span>
@@ -137,9 +133,9 @@
                             this.spinner = ''
                             this.display = 'is-hidden'
                         })
-                    // .then(() => {
-                    //     this.imageIndex = setInterval(() => this.carouselForward(), 3000)
-                    // })
+                    .then(() => {
+                        setInterval(() => this.carouselForward(), 3000)
+                    })
                 }
         },
     }

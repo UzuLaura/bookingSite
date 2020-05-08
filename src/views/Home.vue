@@ -1,6 +1,5 @@
 <template>
   <div class="home">
-      <!--SPINNER-->
       <div v-bind:class="[spinner, display]">
           <div>
               <img src="../assets/loader.gif" alt="">
@@ -65,7 +64,7 @@
             },
             convertDate (time) {
                 const date = new Date(time);
-                return date.toString();
+                return date.toLocaleString('lt');
             }
         },
         beforeMount () {

@@ -1,29 +1,24 @@
 <template>
     <div class="edit">
-        <!--SPINNER-->
         <div v-bind:class="[spinner, display]">
             <div>
                 <img src="../assets/loader.gif" alt="">
             </div>
         </div>
         <div class="container section">
-            <!-- NOTIFICATION MESSAGE -->
             <div class="notification" v-bind:class="[notification.color, notification.hidden]">
                 <button class="delete" v-on:click="close"></button>
                 {{ notification.message }}
             </div>
             <form v-on:submit.prevent="editProperty">
-                <!-- PROPERTY NAME FIELD -->
                 <div class="field">
                     <label class="label">Property Name</label>
                     <div class="control">
                         <input class="input" v-model="property.name" type="text" placeholder="Property title">
                     </div>
                 </div>
-                <!-- CITY AND PRICE FIELD -->
                 <div class="field is-horizontal">
                     <div class="field-body">
-                        <!-- City -->
                         <div class="field">
                             <label class="label">City</label>
                             <div class="control is-expanded">
@@ -36,7 +31,6 @@
                                 </div>
                             </div>
                         </div>
-                        <!-- Price -->
                         <div class="field">
                             <label class="label">Price</label>
                             <div class="control">
@@ -45,21 +39,18 @@
                         </div>
                     </div>
                 </div>
-                <!-- DESCRIPTION FIELD -->
                 <div class="field">
                     <label class="label">Description</label>
                     <div class="control">
                         <textarea class="textarea" v-model="property.description" placeholder="Write description about your place..."></textarea>
                     </div>
                 </div>
-                <!-- IMAGE FIELD -->
                 <div class="field">
                     <label class="label">Images (at least one)</label>
                     <div class="control">
                         <input class="input" v-model="property.image" type="text" placeholder="Image url">
                     </div>
                 </div>
-                <!-- MORE IMAGES FIELD -->
                 <div class="field" v-for="(image, index) in property.extraImages" :key="image">
                     <div class="columns is-vcentered">
                         <div class="column">
@@ -70,7 +61,6 @@
                         </div>
                     </div>
                 </div>
-                <!-- ADD MORE IMAGES BUTTON -->
                 <div class="field is-horizontal">
                     <div class="control add-more" v-on:click="addInputField">
                         <span class="tag is-danger">+</span> <strong>Add More Images</strong>
